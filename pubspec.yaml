@@ -41,25 +41,14 @@ dependencies:
   firebase_core: ^0.4.4+3
   firebase_auth: ^0.16.0
   cloud_firestore: ^0.13.5
-  firebase_storage: ^3.1.5
-  firebase_messaging: ^6.0.13
-
-  # Image
-  image_picker: ^0.6.7+2
-  cached_network_image: ^2.2.0
-  flutter_swiper: ^1.1.6
 
   # Utils
   auto_size_text: ^2.1.0
   connectivity: ^0.4.8+2
   jiffy: ^3.0.1                    # handle date
   http: ^0.12.1
-  in_app_purchase: ^0.3.4+1
-
-  # Location
-  geolocator: ^5.3.1
-  location: ^3.0.2
-
+  sleek_circular_slider: ^1.2.0+web
+  tab_indicator_styler: ^1.0.0
 
 dev_dependencies:
   flutter_test:

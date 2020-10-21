@@ -3,12 +3,11 @@ import 'package:get/get.dart';
 import 'package:iot_thermostat/app/data/repository/user_repository.dart';
 import 'package:iot_thermostat/app/translations/app_translations.dart';
 import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
-import 'package:location/location.dart';
 
 class LocationService {
   static UserRepository _repository = UserRepository();
 
-  static Future<Map<String, dynamic>> getLocation(
+  /*static Future<Map<String, dynamic>> getLocation(
       {bool showDialogVerified: true}) async {
     Location location = new Location();
 
@@ -41,7 +40,7 @@ class LocationService {
       'longitude': _locationData.longitude,
     };
     return map;
-  }
+  }*/
 
   static showDialogCheckLocation() async {
     Get.dialog(
@@ -81,17 +80,5 @@ class LocationService {
     await Future.delayed(Duration(seconds: 2), () {
       if (Get.isDialogOpen) Get.back();
     });
-  }
-
-  static Future<Map<String, dynamic>> updateLocation(String idUser,
-      {bool showDialogVerified: true}) async {
-    Map<String, dynamic> _location = {};
-    Map<String, dynamic> _coord =
-        await getLocation(showDialogVerified: showDialogVerified);
-    _location.addAll({"location": _coord});
-    if (_location != null) {
-      await _repository.updateUserLocation(idUser, _location);
-    }
-    return _coord;
   }
 }

@@ -4,7 +4,7 @@ abstract class ConstantColor {
   static const colorBackground = Color(0xffeff3f5);
   static const colorBackgroundEnd = Color(0xff6671E5);
   static const colorBackground60Opa = Color(0x995D97F5);
-  static const colorBackgroundDialogBomb = Color(0xff3876ED);
+  static const colorPrimary = Color(0xff3876ED);
   static const colorBtnArroundEnabled = Color(0xff004FE5);
   static const colorDialogBombEnabledPrice = Color(0x1a0859F4);
   static const colorPriceTextDisabled = Color(0xff7B7B7B);
