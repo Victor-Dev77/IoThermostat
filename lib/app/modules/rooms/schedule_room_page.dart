@@ -4,57 +4,25 @@ import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
-class HomePage extends StatelessWidget {
+class ScheduleRoomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
+    return Center(
           child: Column(
             children: <Widget>[
-              _buildFanMode(),
+              _buildRoom(),
               _buildTempRow(),
               _buildCircularSlider(),
-              _buildHVACMode(),
+              _buildMode(),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        backgroundColor: ConstantColor.colorBackground,
-        elevation: 0,
-        selectedItemColor: ConstantColor.colorPrimary,
-        unselectedItemColor: ConstantColor.grey,
-        iconSize: 30,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.timer), title: Text("add")),
-          BottomNavigationBarItem(icon: Icon(Icons.add), title: Text("add")),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), title: Text("settings")),
-        ],
-      ),
-    );
+        );
   }
 
-  Widget _buildFanMode() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(Icons.add),
-            SizedBox(width: 10),
-            Text("Fan Mode"),
-          ],
-        ),
-        Switch(
-          onChanged: (value) => print(value),
-          value: true,
-        ),
-      ],
+  Widget _buildRoom() {
+    return Padding(
+      padding: EdgeInsets.all(25),
+      child: Text("DROPDOWN ROOM"),
     );
   }
 
@@ -95,7 +63,7 @@ class HomePage extends StatelessWidget {
         max: 30,
         initialValue: 20,
         onChange: (double value) {
-          print(value);
+          //print(value);
         },
         innerWidget: (value) {
           int degree = value.round();
@@ -114,13 +82,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHVACMode() {
+  Widget _buildMode() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: <Widget>[
           Text(
-            "HVAC Mode",
+            "Mode",
             style: TextStyle(
               color: ConstantColor.grey,
               fontWeight: FontWeight.bold,
@@ -129,7 +97,7 @@ class HomePage extends StatelessWidget {
           ),
           SizedBox(height: 15),
           DefaultTabController(
-            length: 4,
+            length: 2,
             initialIndex: 0,
             child: Container(
               height: 75,
@@ -155,19 +123,11 @@ class HomePage extends StatelessWidget {
                 tabs: [
                   Tab(
                     icon: Icon(Icons.ac_unit),
-                    text: "Heat",
+                    text: "ON",
                   ),
                   Tab(
                     icon: Icon(Icons.ac_unit),
-                    text: "Cool",
-                  ),
-                  Tab(
-                    icon: Icon(Icons.ac_unit),
-                    text: "Auto",
-                  ),
-                  Tab(
-                    icon: Icon(Icons.ac_unit),
-                    text: "Off",
+                    text: "OFF",
                   ),
                 ],
                 labelColor: ConstantColor.white,
