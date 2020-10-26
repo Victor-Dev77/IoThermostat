@@ -37,6 +37,8 @@ dependencies:
   # State management + context + navigation + dependancies injection
   get: ^3.3.0
 
+  mqtt_client: ^7.2.1
+
   # Firebase
   firebase_core: ^0.4.4+3
   firebase_auth: ^0.16.0
