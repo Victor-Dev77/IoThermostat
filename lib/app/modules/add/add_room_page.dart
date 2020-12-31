@@ -11,9 +11,23 @@ class AddRoomPage extends StatelessWidget {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Container(
         color: Colors.grey,
+        height: Get.height - kBottomNavigationBarHeight,
         child: Column(
           children: <Widget>[
-            SizedBox(height: 10),
+            GetBuilder<SqueletonController>(builder: (_) {
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+                  child: Text(
+                    "Nombre de pièces: ${_.nbRooms}",
+                    style: TextStyle(
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+              );
+            }),
             _buildListRooms(),
             SizedBox(height: 10),
             _buildForm(),

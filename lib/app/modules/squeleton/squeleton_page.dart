@@ -14,7 +14,7 @@ class SqueletonPage extends GetView<SqueletonController> {
       builder: (_) {
         return Scaffold(
           body: SafeArea(
-            child: _pageWithIndex(),
+            child: SingleChildScrollView(child: _pageWithIndex()),
           ),
           bottomNavigationBar: BottomNavigationBar(
             showSelectedLabels: false,

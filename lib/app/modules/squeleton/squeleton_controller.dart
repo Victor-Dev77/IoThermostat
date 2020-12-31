@@ -11,13 +11,17 @@ class SqueletonController extends GetxController {
 
   List<String> rooms = ['Salon', 'Chambre 1', 'Cuisine', 'Salle de bain', 'WC'];
   String roomSelected = "";
+  int nbRooms;
 
   @override
   void onInit() {
     super.onInit();
     roomSelected = rooms.first;
+    nbRooms = rooms.length;
     ScheduleRoomController.to.enabled();
   }
+
+  int get rankRoom => rooms.indexOf(roomSelected) + 1;
 
   updateIndexMenu(int index) {
     _indexMenu = index;
@@ -34,6 +38,7 @@ class SqueletonController extends GetxController {
     if (roomSelected == rooms[index])
       temp = rooms.first;
     rooms.removeAt(index);
+    nbRooms--;
     if (rooms.contains(temp))
       roomSelected = temp;
     else
@@ -52,6 +57,7 @@ class SqueletonController extends GetxController {
     }
     rooms.add(room);
     roomSelected = room;
+    nbRooms++;
     ScheduleRoomController.to.enabled();
     update();
   }

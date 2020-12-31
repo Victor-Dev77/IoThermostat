@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,8 @@ import 'package:iot_thermostat/app/modules/widgets_global/bloc_info_temp.dart';
 import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
+import 'package:iot_thermostat/app/modules/widgets_global/custom_dropdown.dart'
+    as custom;
 
 class ScheduleRoomPage extends StatelessWidget {
   @override
@@ -42,40 +45,42 @@ class ScheduleRoomPage extends StatelessWidget {
   Widget _buildRoom() {
     return Padding(
       padding: EdgeInsets.all(25),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              "Pièce",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: GetBuilder<SqueletonController>(
-              builder: (_) {
-                return Padding(
+      child: GetBuilder<SqueletonController>(
+        builder: (_) {
+          return Row(
+            children: [
+              Expanded(
+                child: AutoSizeText(
+                  "Pièce ${_.rankRoom}/${_.nbRooms}",
+                  maxLines: 1,
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey),
+                ),
+              ),
+              SizedBox(width: 20),
+              Expanded(
+                flex: 2,
+                child: Padding(
                   padding: EdgeInsets.only(right: 20),
-                  child: DropdownButton<String>(
+                  child: custom.DropdownButtonFormField(
                     items: _.rooms.map((String value) {
-                      return DropdownMenuItem<String>(
+                      return custom.DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
                       );
                     }).toList(),
                     onChanged: (value) => _.changeRoom(value),
-                    elevation: 10,
+                    height: _.nbRooms > 4 ? 200.0 : null,
+                    offsetAmount: 150.0,
                     value: _.roomSelected,
-                    dropdownColor: Colors.grey[300],
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
