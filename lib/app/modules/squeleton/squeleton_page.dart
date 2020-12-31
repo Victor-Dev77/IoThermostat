@@ -28,11 +28,10 @@ class SqueletonPage extends GetView<SqueletonController> {
             onTap: (index) => controller.updateIndexMenu(index),
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.timer), title: Text("schedule")),
+                  icon: Icon(Icons.timer), label: "schedule"),
+              BottomNavigationBarItem(icon: Icon(Icons.add), label: "add"),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.add), title: Text("add")),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings), title: Text("settings")),
+                  icon: Icon(Icons.settings), label: "settings"),
             ],
           ),
         );

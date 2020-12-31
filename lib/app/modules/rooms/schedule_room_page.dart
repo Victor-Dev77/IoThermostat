@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:iot_thermostat/app/modules/rooms/schedule_room_controller.dart';
+import 'package:iot_thermostat/app/modules/squeleton/squeleton_controller.dart';
 import 'package:iot_thermostat/app/modules/widgets_global/bloc_info_temp.dart';
 import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
@@ -7,22 +11,72 @@ import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 class ScheduleRoomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-          child: Column(
-            children: <Widget>[
-              _buildRoom(),
-              _buildTempRow(),
-              _buildCircularSlider(),
-              _buildMode(),
-            ],
+    return GetBuilder<ScheduleRoomController>(
+      builder: (_) {
+        if (_.isEnabled)
+          return Center(
+            child: Column(
+              children: <Widget>[
+                _buildRoom(),
+                _buildTempRow(),
+                _buildCircularSlider(),
+                _buildMode(),
+              ],
+            ),
+          );
+        return Center(
+          child: Text(
+            "Veuillez ajouter une pièce\nde votre maison",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
           ),
         );
+      },
+    );
   }
 
   Widget _buildRoom() {
     return Padding(
       padding: EdgeInsets.all(25),
-      child: Text("DROPDOWN ROOM"),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              "Pièce",
+              style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: GetBuilder<SqueletonController>(
+              builder: (_) {
+                return Padding(
+                  padding: EdgeInsets.only(right: 20),
+                  child: DropdownButton<String>(
+                    items: _.rooms.map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (value) => _.changeRoom(value),
+                    elevation: 10,
+                    value: _.roomSelected,
+                    dropdownColor: Colors.grey[300],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -34,19 +88,19 @@ class ScheduleRoomPage extends StatelessWidget {
         children: <Widget>[
           BlocInfoTemp(
             icon: Icon(
-              Icons.ac_unit,
+              FontAwesomeIcons.tint,
               color: ConstantColor.colorPrimary,
             ),
-            title: "Cool at",
-            degree: 80,
+            title: "Humidité",
+            percent: 80,
           ),
           BlocInfoTemp(
             icon: Icon(
-              Icons.ac_unit,
+              FontAwesomeIcons.wind,
               color: ConstantColor.colorAccent,
             ),
-            title: "Heat at",
-            degree: 80,
+            title: "Qualité Air",
+            percent: 65,
           ),
         ],
       ),
@@ -122,11 +176,11 @@ class ScheduleRoomPage extends StatelessWidget {
               child: TabBar(
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.ac_unit),
+                    icon: Icon(FontAwesomeIcons.fire),
                     text: "ON",
                   ),
                   Tab(
-                    icon: Icon(Icons.ac_unit),
+                    icon: Icon(FontAwesomeIcons.snowflake),
                     text: "OFF",
                   ),
                 ],
