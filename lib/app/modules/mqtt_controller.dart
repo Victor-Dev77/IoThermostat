@@ -42,7 +42,10 @@ class MQTTController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    MQTTService.connect();
+    //TODO: a decommenter
+   // MQTTService.connect(); 
+    
+    
     //Get.put(PoidsController());
    // Get.put(NotificationService());
   }

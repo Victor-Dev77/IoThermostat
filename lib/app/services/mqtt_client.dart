@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:iot_thermostat/app/modules/mqtt_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -10,14 +12,19 @@ class MQTTService {
   static final String topicPoids = 'POIDS/pa';
   static final String topicPoidsFlutter = 'POIDS/pa/flutter';
 
-  static final client = MqttServerClient.withPort(
-      '0.tcp.ngrok.io', '1fc240be65514e06b0f357fbcb7d2b90', 17606);
+  static final client = MqttServerClient('test.mosquitto.org', '');
+  /*
+  MqttServerClient.withPort(
+      '0.tcp.ngrok.io', 
+      '1fc240be65514e06b0f357fbcb7d2b90', 
+      17606,
+      maxConnectionAttempts: 1);*/
 
   static connect() async {
     client.logging(on: true);
     client.keepAlivePeriod = 5;
-    client.autoReconnect = true;
-    client.onAutoReconnect = _onAutoReconnect;
+    client.autoReconnect = false; //TODO: true
+    // client.onAutoReconnect = _onAutoReconnect;
     client.onDisconnected = _onDisconnected;
     client.onConnected = _onConnected;
     client.onSubscribed = _onSubscribed;
@@ -33,10 +40,27 @@ class MQTTService {
     client.connectionMessage = connMess;
 
     try {
-      await client.connect("bluecase", "bluecase");
-    } on Exception catch (e) {
+      //await client.connect("bluecase", "bluecase");
+      await client.connect();
+    } on NoConnectionException catch (e) {
+      // Raised by the client when connection fails.
       print('EXAMPLE::client exception - $e');
       client.disconnect();
+      return;
+    } on SocketException catch (e) {
+      // Raised by the socket layer
+      print('EXAMPLE::socket exception - $e');
+      client.disconnect();
+      return;
+    } on Exception {
+      // NoConnectionException
+      print('EXAMPLE::socket exception - ???');
+      client.disconnect();
+      return;
+    } catch (e) {
+      print('EXAMPLE::socket exception - ???');
+      client.disconnect();
+      return;
     }
 
     if (client.connectionStatus.state == MqttConnectionState.connected) {
@@ -54,7 +78,7 @@ class MQTTService {
 
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
-      if(c[0].topic == "WIFI/pa" || c[0].topic == "WIFI/death"){
+      if (c[0].topic == "WIFI/pa" || c[0].topic == "WIFI/death") {
         String _wifiValue =
             MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
@@ -68,7 +92,7 @@ class MQTTService {
         print('');
         MQTTController.to.updateWifiSignal(_wifiValue);
       } else {
-         String _poidValue =
+        String _poidValue =
             MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
 
         /// The above may seem a little convoluted for users only interested in the
@@ -82,13 +106,13 @@ class MQTTService {
         MQTTController.to.updatePoids(_poidValue);
       }
     });
-
   }
 
-  static publishPoidESP(){
+  static publishPoidESP() {
     final builder = MqttClientPayloadBuilder();
     builder.addString('ON');
-    client.publishMessage(topicPoidsFlutter, MqttQos.atMostOnce, builder.payload);
+    client.publishMessage(
+        topicPoidsFlutter, MqttQos.atMostOnce, builder.payload);
   }
 
   static _onSubscribed(String topic) {
@@ -113,5 +137,6 @@ class MQTTService {
       print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
     }
     print("DECONNECTER");
+    return;
   }
 }

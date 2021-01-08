@@ -6,10 +6,17 @@ import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
-class ScheduleRoomPage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        title: Text("IO'Thermostat"),
+      ),
+      body: SafeArea(
+        child: Container(
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -19,6 +26,8 @@ class ScheduleRoomPage extends StatelessWidget {
             _buildMode(),
           ],
         ),
+      ),
+    ),
       ),
     );
   }
@@ -156,4 +165,5 @@ class ScheduleRoomPage extends StatelessWidget {
       ),
     );
   }
+
 }
