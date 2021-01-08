@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
-import 'package:iot_thermostat/app/modules/add/add_room_page.dart';
 import 'package:iot_thermostat/app/modules/rooms/schedule_room_page.dart';
-import 'package:iot_thermostat/app/modules/settings/settings_page.dart';
 import 'package:iot_thermostat/app/modules/squeleton/squeleton_controller.dart';
-import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
 
 class SqueletonPage extends GetView<SqueletonController> {
   @override
@@ -13,36 +10,16 @@ class SqueletonPage extends GetView<SqueletonController> {
       init: SqueletonController(),
       builder: (_) {
         return Scaffold(
-          body: SafeArea(
-            child: SingleChildScrollView(child: _pageWithIndex()),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            backgroundColor: ConstantColor.colorBackground,
+          appBar: AppBar(
             elevation: 0,
-            selectedItemColor: ConstantColor.colorPrimary,
-            unselectedItemColor: ConstantColor.grey,
-            iconSize: 30,
-            currentIndex: controller.indexMenu,
-            onTap: (index) => controller.updateIndexMenu(index),
-            items: [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.timer), label: "schedule"),
-              BottomNavigationBarItem(icon: Icon(Icons.add), label: "add"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings), label: "settings"),
-            ],
+            centerTitle: true,
+            title: Text("IO'Thermostat"),
+          ),
+          body: SafeArea(
+            child: ScheduleRoomPage(),
           ),
         );
       },
     );
-  }
-
-  Widget _pageWithIndex() {
-    if (controller.indexMenu == 0)
-      return ScheduleRoomPage();
-    else if (controller.indexMenu == 1) return AddRoomPage();
-    return SettingsPage();
   }
 }
