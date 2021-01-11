@@ -43,7 +43,6 @@ class ModeSwitchState extends State<ModeSwitch> with TickerProviderStateMixin {
           SizedBox(height: 15),
           GetBuilder<MQTTController>(
             builder: (_) {
-              print("BUILD ON OFF -> ${_.isStarting}");
               return DefaultTabController(
                 length: 2,
                 initialIndex: _.isStarting ? 0 : 1,

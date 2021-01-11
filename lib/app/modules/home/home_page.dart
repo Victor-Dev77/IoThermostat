@@ -6,9 +6,7 @@ import 'package:iot_thermostat/app/modules/widgets_global/bloc_info_temp.dart';
 import 'package:iot_thermostat/app/modules/widgets_global/mode_switch.dart';
 import 'package:iot_thermostat/app/services/mqtt_client.dart';
 import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
-import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -55,7 +53,7 @@ class HomePage extends StatelessWidget {
                       color: ConstantColor.primary,
                     ),
                     title: "Humidité",
-                    value: "80%",
+                    value: "${_.humidity}%",
                   ),
                   BlocInfoTemp(
                     icon: Icon(
@@ -66,7 +64,7 @@ class HomePage extends StatelessWidget {
                     // Fresh air = ppm < 500
                     // Good air = 501 < ppm < 700
                     // Air poor = ppm > 701
-                    value: "Air poor",
+                    value: "${_.airQuality}",
                   ),
                 ],
               ),
@@ -99,8 +97,8 @@ class HomePage extends StatelessWidget {
               )),
               min: 14,
               max: 30,
-              initialValue: _.tempValue,
-              onChange: (double value) => MQTTService.publishTemperature(value),
+              initialValue: _.temperature,
+              onChange: (double value) => MQTTService.publishTemperature(value.round()),
               innerWidget: (value) {
                 int degree = value.round();
                 return Align(
