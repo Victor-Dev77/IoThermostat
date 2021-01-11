@@ -8,11 +8,16 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 // VICTOR: 3cac05333f5441eaaa2ef43968fe3681
 
 class MQTTService {
-  static final String topicWifi = 'WIFI/#';
-  static final String topicPoids = 'POIDS/pa';
-  static final String topicPoidsFlutter = 'POIDS/pa/flutter';
+  static final String server = "broker.hivemq.com";
+  static final String clientIdentifier = "clientId-8lYQVMbrlC";
+  static final int port = 1883;
+  static final String topicOnOff = "STATUS/#";
+  static final String topicTemp = "TEMP/temp";
+  static final String topicDeath = "WIFI/death";
+  static final String messageDeath = "Je suis mort FLUTTER";
 
-  static final client = MqttServerClient('test.mosquitto.org', '');
+  static final client =
+      MqttServerClient.withPort(server, clientIdentifier, port);
   /*
   MqttServerClient.withPort(
       '0.tcp.ngrok.io', 
@@ -30,10 +35,10 @@ class MQTTService {
     client.onSubscribed = _onSubscribed;
 
     final connMess = MqttConnectMessage()
-        .withClientIdentifier('1fc240be65514e06b0f357fbcb7d2b90')
+        .withClientIdentifier(clientIdentifier)
         .keepAliveFor(5)
-        .withWillTopic('WIFI/death')
-        .withWillMessage('Je suis mort FLUTTER')
+        .withWillTopic(topicDeath)
+        .withWillMessage(messageDeath)
         .startClean() // Non persistent session for testing
         .withWillQos(MqttQos.atMostOnce);
     print('EXAMPLE::Mosquitto client connecting....');
@@ -73,37 +78,28 @@ class MQTTService {
       return;
     }
 
-    client.subscribe(topicWifi, MqttQos.atMostOnce);
-    client.subscribe(topicPoids, MqttQos.atMostOnce);
+    client.subscribe(topicOnOff, MqttQos.atMostOnce);
+    client.subscribe(topicTemp, MqttQos.atMostOnce);
 
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
-      if (c[0].topic == "WIFI/pa" || c[0].topic == "WIFI/death") {
-        String _wifiValue =
-            MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-        /// The above may seem a little convoluted for users only interested in the
-        /// payload, some users however may be interested in the received publish message,
-        /// lets not constrain ourselves yet until the package has been in the wild
-        /// for a while.
-        /// The payload is a byte buffer, this will be specific to the topic
+      final String topic = c[0].topic;
+      final String message =
+          MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+      if (topic == topicDeath) {
+        print("DEATH !");
+        MQTTController.to.setDeath();
+      } else if (topic == topicTemp) {
         print(
-            'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $_wifiValue -->');
+            "Topic TEMPERATURE topic is <${c[0].topic}>, payload is <-- $message -->");
         print('');
-        MQTTController.to.updateWifiSignal(_wifiValue);
-      } else {
-        String _poidValue =
-            MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-        /// The above may seem a little convoluted for users only interested in the
-        /// payload, some users however may be interested in the received publish message,
-        /// lets not constrain ourselves yet until the package has been in the wild
-        /// for a while.
-        /// The payload is a byte buffer, this will be specific to the topic
-        print(
-            'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $_poidValue -->');
-        print('');
-        MQTTController.to.updatePoids(_poidValue);
+        MQTTController.to.updateTemperature(message);
+      } else if (topic == "STATUS/on") {
+        print("ON SERVER");
+        MQTTController.to.setStart();
+      } else if (topic == "STATUS/off") {
+        print("OFF SERVER");
+        MQTTController.to.setDeath();
       }
     });
   }
@@ -111,8 +107,19 @@ class MQTTService {
   static publishPoidESP() {
     final builder = MqttClientPayloadBuilder();
     builder.addString('ON');
-    client.publishMessage(
-        topicPoidsFlutter, MqttQos.atMostOnce, builder.payload);
+    client.publishMessage(topicOnOff, MqttQos.atMostOnce, builder.payload);
+  }
+
+  static publishOnOff(bool status) {
+    final builder = MqttClientPayloadBuilder();
+    builder.addBool(val: status);
+    client.publishMessage("STATUS/app", MqttQos.atMostOnce, builder.payload);
+  }
+
+  static publishTemperature(double temperature) {
+    final builder = MqttClientPayloadBuilder();
+    builder.addDouble(temperature);
+    client.publishMessage("TEMP/app", MqttQos.atMostOnce, builder.payload);
   }
 
   static _onSubscribed(String topic) {

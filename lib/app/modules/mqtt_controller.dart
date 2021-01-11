@@ -1,12 +1,19 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iot_thermostat/app/services/mqtt_client.dart';
+
+import 'widgets_global/mode_switch.dart';
 
 class MQTTController extends GetxController {
 
   static MQTTController get to => Get.find();
 
-  RxInt _wifiValue = 0.obs;
-  int get wifiValue => this._wifiValue.value;
+  static final tabKey = new GlobalKey<ModeSwitchState>();
+  RxBool _startValue = false.obs;
+  bool get isStarting => this._startValue.value;
+
+  RxDouble _tempValue = 14.0.obs;
+  double get tempValue => this._tempValue.value;
 
   RxDouble _poidValue = 0.0.obs;
   double get poidValue => this._poidValue.value;
@@ -18,14 +25,8 @@ class MQTTController extends GetxController {
   String get textLocalisation => this._textLocalisation;
   
   
-  updateWifiSignal(String payload) {
-    if(payload == "Je suis mort" || payload == "Je suis mort FLUTTER") {
-      _wifiValue.value = 0;
-    } else {
-      _wifiValue.value = int.parse(payload).abs();
-    }
-    updateIntensity();
-    //NotificationService.to.showNotif(_wifiValue.value);
+  updateTemperature(String payload) {
+    _tempValue.value = double.parse(payload).abs();
     update();
   }
 
@@ -42,34 +43,24 @@ class MQTTController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    //TODO: a decommenter
-   // MQTTService.connect(); 
-    
-    
-    //Get.put(PoidsController());
-   // Get.put(NotificationService());
+    MQTTService.connect(); 
   }
 
-  updateIntensity() {
-    //int value = 10 + Random().nextInt(91); // 10 a 90
-    //print(value);
-    if (_wifiValue.value == 0 || _wifiValue.value >= 90) {
-      _intensityLocalisation = 0;
-      _textLocalisation = "Aucune connexion...";
-    }
-    else if (_wifiValue.value >= 1 && _wifiValue.value <= 45) {
-      _intensityLocalisation = 3;
-      _textLocalisation = "Valise proche";
-    }
-    else if (_wifiValue.value > 45 && _wifiValue.value <= 54) {
-      _intensityLocalisation = 2;
-      _textLocalisation = "Valise éloignée";
-    }
-    else if (_wifiValue.value > 55 && _wifiValue.value < 90) {
-      _intensityLocalisation = 1;
-      _textLocalisation = "Valise hors de portée";
-    }
-    
+  setStart() {
+    _startValue.value = true;
+    tabKey.currentState.tabController.animateTo(0);
+    update();
+  }
+
+  setDeath() {
+    _startValue.value = false;
+    tabKey.currentState.tabController.animateTo(1);
+    update();
+  }
+
+  changeMode(int index) {
+    index == 0 ? setStart() : setDeath();
+    MQTTService.publishOnOff(isStarting);
   }
 
 }
