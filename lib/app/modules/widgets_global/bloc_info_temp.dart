@@ -1,6 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
+import 'package:iot_thermostat/app/utils/constant_color.dart';
 
 class BlocInfoTemp extends StatelessWidget {
   final String title;

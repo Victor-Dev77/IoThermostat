@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
+import 'package:iot_thermostat/app/utils/constant_color.dart';
 import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 import '../mqtt_controller.dart';
 
@@ -58,27 +58,30 @@ class ModeSwitchState extends State<ModeSwitch> with TickerProviderStateMixin {
                           color: ConstantColor.primary.withOpacity(.5),
                         )
                       ]),
-                  child: TabBar(
-                    tabs: [
-                      Tab(
-                        icon: Icon(FontAwesomeIcons.fire),
-                        text: "ON",
+                  child: IgnorePointer(
+                    ignoring: !_.isConnecting,
+                    child: TabBar(
+                      tabs: [
+                        Tab(
+                          icon: Icon(FontAwesomeIcons.fire),
+                          text: "ON",
+                        ),
+                        Tab(
+                          icon: Icon(FontAwesomeIcons.snowflake),
+                          text: "OFF",
+                        ),
+                      ],
+                      controller: tabController,
+                      onTap: (index) => _.changeMode(index),
+                      labelColor: ConstantColor.primary,
+                      unselectedLabelColor: ConstantColor.primaryBG,
+                      indicator: RectangularIndicator(
+                        color: ConstantColor.surface2x,
+                        bottomLeftRadius: 100,
+                        bottomRightRadius: 100,
+                        topLeftRadius: 100,
+                        topRightRadius: 100,
                       ),
-                      Tab(
-                        icon: Icon(FontAwesomeIcons.snowflake),
-                        text: "OFF",
-                      ),
-                    ],
-                    controller: tabController,
-                    onTap: (index) => _.changeMode(index),
-                    labelColor: ConstantColor.primary,
-                    unselectedLabelColor: ConstantColor.primaryBG,
-                    indicator: RectangularIndicator(
-                      color: ConstantColor.surface2x,
-                      bottomLeftRadius: 100,
-                      bottomRightRadius: 100,
-                      topLeftRadius: 100,
-                      topRightRadius: 100,
                     ),
                   ),
                 ),

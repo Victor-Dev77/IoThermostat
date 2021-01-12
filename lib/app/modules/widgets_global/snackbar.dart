@@ -6,8 +6,8 @@ class CustomSnackbar {
     Get.snackbar(
       text,
       "",
-      snackPosition: SnackPosition.BOTTOM,
-      colorText: Colors.black,
+      snackPosition: SnackPosition.TOP,
+      colorText: Colors.white,
       duration: Duration(seconds: 3),
       // Text('$text ', style: TextStyle(fontWeight: FontWeight.bold),)
     );

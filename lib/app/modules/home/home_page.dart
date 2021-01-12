@@ -5,7 +5,7 @@ import 'package:iot_thermostat/app/modules/mqtt_controller.dart';
 import 'package:iot_thermostat/app/modules/widgets_global/bloc_info_temp.dart';
 import 'package:iot_thermostat/app/modules/widgets_global/mode_switch.dart';
 import 'package:iot_thermostat/app/services/mqtt_client.dart';
-import 'package:iot_thermostat/app/utils/constant/constant_color.dart';
+import 'package:iot_thermostat/app/utils/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 class HomePage extends StatelessWidget {
@@ -43,7 +43,6 @@ class HomePage extends StatelessWidget {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Container(
-              //color: Colors.red,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -79,40 +78,45 @@ class HomePage extends StatelessWidget {
     return Expanded(
       flex: 2,
       child: Container(
-        width: Get.width, //275,
-        //  height: 275,
-        //color: Colors.green,
+        width: Get.width,
         child: GetBuilder<MQTTController>(
           builder: (_) {
+            print("temperature => ${_.temperature}");
+            if (!_.isConnecting) return Center(
+              child: Text("Internet Indisponible...", style: TextStyle(color: ConstantColor.primary, fontSize: 25),),
+            );
             if (!_.isStarting) return Container();
-            return SleekCircularSlider(
-              appearance: CircularSliderAppearance(
-                  customColors: CustomSliderColors(
-                trackColor: ConstantColor.primaryBG,
-                progressBarColors: [
-                  ConstantColor.accent,
-                  Colors.red,
-                  Colors.blue
-                ],
-              )),
-              min: 14,
-              max: 30,
-              initialValue: _.temperature,
-              onChange: (double value) => MQTTService.publishTemperature(value.round()),
-              innerWidget: (value) {
-                int degree = value.round();
-                return Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "$degree°C",
-                    style: TextStyle(
-                      fontSize: 70,
-                      fontWeight: FontWeight.w400,
-                      color: ConstantColor.primary,
+            return IgnorePointer(
+              ignoring: !_.isConnecting,
+              child: SleekCircularSlider(
+                appearance: CircularSliderAppearance(
+                    customColors: CustomSliderColors(
+                  trackColor: ConstantColor.primaryBG,
+                  progressBarColors: [
+                    ConstantColor.accent,
+                    Colors.red,
+                    Colors.blue
+                  ],
+                )),
+                min: 14,
+                max: 30,
+                initialValue: _.temperature,
+                onChange: (double value) => _.changeTemperature(value),
+                innerWidget: (value) {
+                  int degree = value.round();
+                  return Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "$degree°C",
+                      style: TextStyle(
+                        fontSize: 70,
+                        fontWeight: FontWeight.w400,
+                        color: ConstantColor.primary,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           },
         ),
