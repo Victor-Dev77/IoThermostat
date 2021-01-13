@@ -4,7 +4,6 @@ class SplashScreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Center(
         child: Container(
           height: 109,

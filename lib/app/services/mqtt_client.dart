@@ -3,34 +3,25 @@ import 'package:iot_thermostat/app/modules/mqtt_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-// TAJ: 1fc240be65514e06b0f357fbcb7d2b90
-// VICTOR: 3cac05333f5441eaaa2ef43968fe3681
-
 class MQTTService {
 
   // #######################
   // CONSTANTS
   // #######################
-  static final String server = "broker.hivemq.com";
+  static final String server = "0.tcp.ngrok.io";//"broker.hivemq.com";
   static final String clientIdentifier = "clientId-8lYQVMbrlC";
-  static final int port = 1883;
-  static final String topicOnOff = "STATUS/#";
-  static final String topicPublishOnOff = "STATUS/app";
-  static final String topicTemp = "TEMP/temp";
-  static final String topicPublishTemp = "TEMP/app";
-  static final String topicHumidity = "TEMP/humidity";
-  static final String topicAir = "TEMP/air";
-  static final String topicDeath = "WIFI/death";
-  static final String messageDeath = "Je suis mort FLUTTER";
+  static final int port = 19510;//1883;
+  static final String userConnect = "fycMQTT";
+  static final String mdpConnect = "fycmqtt";
+  static final String topicTemp = "FYC/temperature";
+  static final String topicPublishTemp = "FYC/temperature/app";
+  static final String topicHumidity = "FYC/humidity";
+  static final String topicAir = "FYC/quality";
+  static final String topicDeath = "FYC/death";
+  static final String messageDeath = "Je suis mort App FLUTTER";
 
   static final client =
       MqttServerClient.withPort(server, clientIdentifier, port);
-  /*
-  MqttServerClient.withPort(
-      '0.tcp.ngrok.io', 
-      '1fc240be65514e06b0f357fbcb7d2b90', 
-      17606,
-      maxConnectionAttempts: 1);*/
 
   static connect() async {
     client.logging(on: true);
@@ -52,8 +43,8 @@ class MQTTService {
     client.connectionMessage = connMess;
 
     try {
-      //await client.connect("bluecase", "bluecase");
-      await client.connect();
+      await client.connect(userConnect, mdpConnect);
+      //await client.connect();
     } on NoConnectionException catch (e) {
       // Raised by the client when connection fails.
       print('MQTT::client exception - $e');
@@ -87,7 +78,7 @@ class MQTTService {
     // #######################
     // SUBSCRIBE TOPICS
     // #######################
-    client.subscribe(topicOnOff, MqttQos.atMostOnce);
+    client.subscribe(topicDeath, MqttQos.atMostOnce);
     client.subscribe(topicTemp, MqttQos.atMostOnce);
     client.subscribe(topicHumidity, MqttQos.atMostOnce);
     client.subscribe(topicAir, MqttQos.atMostOnce);
@@ -100,16 +91,10 @@ class MQTTService {
 
       if (topic == topicDeath) {
         print("DEATH !");
-        MQTTController.to.setDeath();
+        MQTTController.to.updateThermostatConnecting(false);
       } else if (topic == topicTemp) {
         print("Topic TEMPERATURE topic is <${c[0].topic}>, payload is <-- $message -->");
         MQTTController.to.updateTemperature(message);
-      } else if (topic == "STATUS/on") {
-        print("ON SERVER");
-        MQTTController.to.setStart();
-      } else if (topic == "STATUS/off") {
-        print("OFF SERVER");
-        MQTTController.to.setDeath();
       } else if (topic == topicHumidity) {
         print("Topic HUMIDITY <${c[0].topic}>, payload is <-- $message -->");
         MQTTController.to.updateHumidity(message);
@@ -117,7 +102,6 @@ class MQTTService {
         print("Topic AIR <${c[0].topic}>, payload is <-- $message -->");
         MQTTController.to.updateAirQuality(message);
       }
-
     });
   }
 
@@ -151,11 +135,6 @@ class MQTTService {
   // #######################
   // PUBLISH METHOD
   // #######################
-  static publishOnOff(bool status) {
-    final builder = MqttClientPayloadBuilder();
-    builder.addString(status.toString());
-    client.publishMessage(topicPublishOnOff, MqttQos.atMostOnce, builder.payload);
-  }
 
   static publishTemperature(int temperature) {
     final builder = MqttClientPayloadBuilder();

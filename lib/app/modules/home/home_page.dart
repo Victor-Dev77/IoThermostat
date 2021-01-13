@@ -3,8 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:iot_thermostat/app/modules/mqtt_controller.dart';
 import 'package:iot_thermostat/app/modules/widgets_global/bloc_info_temp.dart';
-import 'package:iot_thermostat/app/modules/widgets_global/mode_switch.dart';
-import 'package:iot_thermostat/app/services/mqtt_client.dart';
 import 'package:iot_thermostat/app/utils/constant_color.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
@@ -21,11 +19,11 @@ class HomePage extends StatelessWidget {
         child: Container(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 _buildTempRow(),
                 _buildCircularSlider(),
-                _buildMode(),
+                Spacer(),
               ],
             ),
           ),
@@ -36,10 +34,10 @@ class HomePage extends StatelessWidget {
 
   Widget _buildTempRow() {
     return Expanded(
+      flex: 2,
       child: GetBuilder<MQTTController>(
         builder: (_) {
-          if (!_.isStarting)
-            return Container();
+          if (!_.isConnecting || !_.thermostatConnected) return Container();
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -76,7 +74,7 @@ class HomePage extends StatelessWidget {
 
   Widget _buildCircularSlider() {
     return Expanded(
-      flex: 2,
+      flex: 3,
       child: Container(
         width: Get.width,
         child: GetBuilder<MQTTController>(
@@ -85,7 +83,9 @@ class HomePage extends StatelessWidget {
             if (!_.isConnecting) return Center(
               child: Text("Internet Indisponible...", style: TextStyle(color: ConstantColor.primary, fontSize: 25),),
             );
-            if (!_.isStarting) return Container();
+            if (!_.thermostatConnected) return Center(
+              child: Text("Thermostat déconnecté...", style: TextStyle(color: ConstantColor.primary, fontSize: 25),),
+            );
             return IgnorePointer(
               ignoring: !_.isConnecting,
               child: SleekCircularSlider(
@@ -122,9 +122,5 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildMode() {
-    return Expanded(flex: 1, child: ModeSwitch(key: MQTTController.tabKey));
   }
 }
