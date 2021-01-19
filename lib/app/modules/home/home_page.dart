@@ -23,7 +23,9 @@ class HomePage extends StatelessWidget {
               children: <Widget>[
                 _buildTempRow(),
                 _buildCircularSlider(),
-                Spacer(),
+                _buildTemp(),
+                SizedBox(height: 20),
+                //Spacer(),
               ],
             ),
           ),
@@ -80,12 +82,20 @@ class HomePage extends StatelessWidget {
         child: GetBuilder<MQTTController>(
           builder: (_) {
             print("temperature => ${_.temperature}");
-            if (!_.isConnecting) return Center(
-              child: Text("Internet Indisponible...", style: TextStyle(color: ConstantColor.primary, fontSize: 25),),
-            );
-            if (!_.thermostatConnected) return Center(
-              child: Text("Thermostat déconnecté...", style: TextStyle(color: ConstantColor.primary, fontSize: 25),),
-            );
+            if (!_.isConnecting)
+              return Center(
+                child: Text(
+                  "Internet Indisponible...",
+                  style: TextStyle(color: ConstantColor.primary, fontSize: 25),
+                ),
+              );
+            if (!_.thermostatConnected)
+              return Center(
+                child: Text(
+                  "Thermostat déconnecté...",
+                  style: TextStyle(color: ConstantColor.primary, fontSize: 25),
+                ),
+              );
             return IgnorePointer(
               ignoring: !_.isConnecting,
               child: SleekCircularSlider(
@@ -100,7 +110,7 @@ class HomePage extends StatelessWidget {
                 )),
                 min: 14,
                 max: 30,
-                initialValue: _.temperature,
+                initialValue: _.initialTemperature == 0 ? 14.0 : _.initialTemperature,
                 onChange: (double value) => _.changeTemperature(value),
                 innerWidget: (value) {
                   int degree = value.round();
@@ -121,6 +131,48 @@ class HomePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildTemp() {
+    return GetBuilder<MQTTController>(
+      builder: (_) {
+        if (!_.isConnecting || !_.thermostatConnected) return Container();
+        int degree = _.temperature.round();
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 25),
+          child: Container(
+            height: 75,
+            width: 150,
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: ConstantColor.surface,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(bottom: 5),
+                  child: Icon(
+                    FontAwesomeIcons.thermometerHalf,
+                    color: ConstantColor.primary,
+                    size: 30,
+                  ),
+                ),
+                Text(
+                  "$degree°C",
+                  style: TextStyle(
+                    color: ConstantColor.primary,
+                    fontSize: 30,
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

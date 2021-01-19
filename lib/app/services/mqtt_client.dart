@@ -8,9 +8,9 @@ class MQTTService {
   // #######################
   // CONSTANTS
   // #######################
-  static final String server = "0.tcp.ngrok.io";//"broker.hivemq.com";
+  static final String server = "broker.hivemq.com";//"0.tcp.ngrok.io"; //"broker.hivemq.com";
   static final String clientIdentifier = "clientId-8lYQVMbrlC";
-  static final int port = 19510;//1883;
+  static final int port = 1883; //19510; //1883;
   static final String userConnect = "fycMQTT";
   static final String mdpConnect = "fycmqtt";
   static final String topicTemp = "FYC/temperature";

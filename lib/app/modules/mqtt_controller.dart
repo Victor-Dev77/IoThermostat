@@ -9,8 +9,11 @@ class MQTTController extends GetxController {
   double _temperature = 14.0;
   double get temperature => this._temperature;
 
-  int _humidity = 0;
-  int get humidity => this._humidity;
+  double _initialTemperature = 0;
+  double get initialTemperature => this._initialTemperature;
+
+  double _humidity = 0;
+  double get humidity => this._humidity;
 
   String _airQuality = "Air poor";
   String get airQuality => this._airQuality;
@@ -23,12 +26,14 @@ class MQTTController extends GetxController {
 
   updateTemperature(String payload) {
     _temperature = double.parse(payload).abs();
+    if (_initialTemperature == 0)
+      _initialTemperature = _temperature;
     updateThermostatConnecting(true);
     update();
   }
 
   updateHumidity(String payload) {
-    _humidity = int.parse(payload).abs();
+    _humidity = double.parse(payload).abs();
     updateThermostatConnecting(true);
     update();
   }
@@ -64,7 +69,7 @@ class MQTTController extends GetxController {
   }
 
   changeTemperature(double value) {
-    _temperature = value;
+    _initialTemperature = value;
     if (_isConnecting) MQTTService.publishTemperature(value.round());
   }
 }
