@@ -25,7 +25,6 @@ class HomePage extends StatelessWidget {
                 _buildCircularSlider(),
                 _buildTemp(),
                 SizedBox(height: 20),
-                //Spacer(),
               ],
             ),
           ),
@@ -52,7 +51,7 @@ class HomePage extends StatelessWidget {
                       color: ConstantColor.primary,
                     ),
                     title: "Humidité",
-                    value: "${_.humidity}%",
+                    value: "0.0%",          // Afficher l'humidité
                   ),
                   BlocInfoTemp(
                     icon: Icon(
@@ -63,7 +62,7 @@ class HomePage extends StatelessWidget {
                     // Fresh air = ppm < 500
                     // Good air = 501 < ppm < 700
                     // Air poor = ppm > 701
-                    value: "${_.airQuality}",
+                    value: "Air poor",      // Afficher la qualité d'air
                   ),
                 ],
               ),
@@ -81,7 +80,6 @@ class HomePage extends StatelessWidget {
         width: Get.width,
         child: GetBuilder<MQTTController>(
           builder: (_) {
-            print("temperature => ${_.temperature}");
             if (!_.isConnecting)
               return Center(
                 child: Text(
@@ -110,8 +108,8 @@ class HomePage extends StatelessWidget {
                 )),
                 min: 14,
                 max: 30,
-                initialValue: _.initialTemperature == 0 ? 14.0 : _.initialTemperature,
-                onChange: (double value) => _.changeTemperature(value),
+                initialValue: 14.0,                         // Aficher la température initiale
+                onChange: (double value) => print(value),   // Modifier la température
                 innerWidget: (value) {
                   int degree = value.round();
                   return Align(
@@ -138,7 +136,6 @@ class HomePage extends StatelessWidget {
     return GetBuilder<MQTTController>(
       builder: (_) {
         if (!_.isConnecting || !_.thermostatConnected) return Container();
-        int degree = _.temperature.round();
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 25),
           child: Container(
@@ -162,7 +159,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "$degree°C",
+                  "14.0°C",             // Afficher la température
                   style: TextStyle(
                     color: ConstantColor.primary,
                     fontSize: 30,

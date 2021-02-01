@@ -21,32 +21,31 @@ class MQTTController extends GetxController {
   bool _isConnecting = false;
   bool get isConnecting => this._isConnecting;
 
-  bool _thermostatConnected = true;
+  bool _thermostatConnected = true;     //Remettre la valeur à false
   bool get thermostatConnected => this._thermostatConnected;
 
   updateTemperature(String payload) {
-    _temperature = double.parse(payload).abs();
-    if (_initialTemperature == 0)
-      _initialTemperature = _temperature;
-    updateThermostatConnecting(true);
+    ;         // Convertir le type String en double + mettre à jour la température et la connexion du thermostat
     update();
   }
 
   updateHumidity(String payload) {
-    _humidity = double.parse(payload).abs();
-    updateThermostatConnecting(true);
+    ;         // Convertir le type String en double + mettre à jour l'humidité et la connexion du thermostat
     update();
   }
 
   updateAirQuality(String payload) {
-    _airQuality = payload;
-    updateThermostatConnecting(true);
+    ;         // Mettre à jour la qualité de l'air et la connexion du thermostat
     update();
   }
   
   updateThermostatConnecting(bool value) {
-    _thermostatConnected = value;
+    ;         // Mettre à jour la connexion du thermostat
     update();
+  }
+
+  changeTemperature(double value) {
+    ;     // Mettre à jour la température de la roulette et envoyer la température au broker MQTT si il est connecté
   }
 
   @override
@@ -61,15 +60,12 @@ class MQTTController extends GetxController {
         });
         _isConnecting = false;
       } else {
-        if (!_isConnecting) MQTTService.connect();
+        //if (!_isConnecting) MQTTService.connect();    //Decommenter cette ligne
         _isConnecting = true;
       }
       update();
     });
   }
-
-  changeTemperature(double value) {
-    _initialTemperature = value;
-    if (_isConnecting) MQTTService.publishTemperature(value.round());
-  }
 }
+
+

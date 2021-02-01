@@ -3,25 +3,28 @@ import 'package:iot_thermostat/app/modules/mqtt_controller.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
+// Section IV - Communication avec le Broker MQTT
 class MQTTService {
 
   // #######################
   // CONSTANTS
   // #######################
-  static final String server = "broker.hivemq.com";//"0.tcp.ngrok.io"; //"broker.hivemq.com";
-  static final String clientIdentifier = "clientId-8lYQVMbrlC";
-  static final int port = 1883; //19510; //1883;
-  static final String userConnect = "fycMQTT";
-  static final String mdpConnect = "fycmqtt";
-  static final String topicTemp = "FYC/temperature";
-  static final String topicPublishTemp = "FYC/temperature/app";
-  static final String topicHumidity = "FYC/humidity";
-  static final String topicAir = "FYC/quality";
-  static final String topicDeath = "FYC/death";
-  static final String messageDeath = "Je suis mort App FLUTTER";
 
-  static final client =
-      MqttServerClient.withPort(server, clientIdentifier, port);
+  static final String server = "";            // Ajouter l'hote du broker
+  static final String clientIdentifier = "";  // Ajouter un identifiant de connexion unique
+  static final int port = 0;                  // Ajouter le port                                                                       
+  static final String userConnect = "";       // Ajouter l'identifiant de connexion 
+  static final String mdpConnect = "";        // Ajouter le mot de passe de connexion 
+
+  static final String topicTemp = "";         // Ajouter le topic de la temperature 
+  static final String topicPublishTemp = "";  // Ajouter le topic de l'envoi de la temperature
+  static final String topicHumidity = "";     // Ajouter le topic de l'humidite 
+  static final String topicAir = "";          // Ajouter le topic de la qualité d'air 
+  static final String topicDeath = "";        // Ajouter le topic de la mort de l'app 
+  static final String messageDeath = "";      // Ajouter le message a envoyer lors de la mort de l'app  
+
+  static final MqttServerClient client =
+      MqttServerClient.withPort("", "", 0);     // Ajouter l'hote, l'identifiant du client et le port
 
   static connect() async {
     client.logging(on: true);
@@ -33,35 +36,31 @@ class MQTTService {
     client.onSubscribed = _onSubscribed;
 
     final connMess = MqttConnectMessage()
-        .withClientIdentifier(clientIdentifier)
+        .withClientIdentifier("")               // Ajouter l'identifiant de connexion
         .keepAliveFor(5)
-        .withWillTopic(topicDeath)
-        .withWillMessage(messageDeath)
-        .startClean() // Non persistent session for testing
+        .withWillTopic("")                      // Ajouter le topic de la mort de l'app 
+        .withWillMessage("")                    // Ajouter le message a envoyer lors de la mort de l'app
+        .startClean()
         .withWillQos(MqttQos.atMostOnce);
-    print('MQTT::Mosquitto client connection....');
+    print('MQTT::Client connection....');
     client.connectionMessage = connMess;
 
     try {
-      await client.connect(userConnect, mdpConnect);
-      //await client.connect();
+      await client.connect();                   // Ajouter l'identifiant et le mot de passe de connexion 
     } on NoConnectionException catch (e) {
-      // Raised by the client when connection fails.
-      print('MQTT::client exception - $e');
+      print('MQTT::Client exception - $e');
       client.disconnect();
       return;
     } on SocketException catch (e) {
-      // Raised by the socket layer
-      print('MQTT::socket exception - $e');
+      print('MQTT::Socket Exception - $e');
       client.disconnect();
       return;
     } on Exception {
-      // NoConnectionException
-      print('MQTT::socket exception - ???');
+      print('MQTT::Socket Exception');
       client.disconnect();
       return;
     } catch (e) {
-      print('MQTT::socket exception - ???');
+      print('MQTT::Socket Exception - $e');
       client.disconnect();
       return;
     }
@@ -78,10 +77,10 @@ class MQTTService {
     // #######################
     // SUBSCRIBE TOPICS
     // #######################
-    client.subscribe(topicDeath, MqttQos.atMostOnce);
-    client.subscribe(topicTemp, MqttQos.atMostOnce);
-    client.subscribe(topicHumidity, MqttQos.atMostOnce);
-    client.subscribe(topicAir, MqttQos.atMostOnce);
+    client.subscribe("", MqttQos.atMostOnce);                   // Ajouter le topic du testament
+    client.subscribe("", MqttQos.atMostOnce);                   // Ajouter le topic de la température
+    client.subscribe("", MqttQos.atMostOnce);                   // Ajouter le topic de l'humidité
+    client.subscribe("", MqttQos.atMostOnce);                   // Ajouter le topic de la qualité d'air
 
     client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
@@ -91,16 +90,16 @@ class MQTTService {
 
       if (topic == topicDeath) {
         print("DEATH !");
-        MQTTController.to.updateThermostatConnecting(false);
+        ;                                                           // Mettre le thermostat hors service
       } else if (topic == topicTemp) {
-        print("Topic TEMPERATURE topic is <${c[0].topic}>, payload is <-- $message -->");
-        MQTTController.to.updateTemperature(message);
+        print("Topic TEMPERATURE, payload is <-- $message -->");
+        ;                                                           // Mettre à jour la température
       } else if (topic == topicHumidity) {
-        print("Topic HUMIDITY <${c[0].topic}>, payload is <-- $message -->");
-        MQTTController.to.updateHumidity(message);
+        print("Topic HUMIDITY, payload is <-- $message -->");
+        ;                                                           // Mettre à jour l'humidité
       } else if (topic == topicAir) {
-        print("Topic AIR <${c[0].topic}>, payload is <-- $message -->");
-        MQTTController.to.updateAirQuality(message);
+        print("Topic AIR, payload is <-- $message -->");
+        ;                                                           // Mettre à jour la qualité d'air
       }
     });
   }
@@ -139,6 +138,6 @@ class MQTTService {
   static publishTemperature(int temperature) {
     final builder = MqttClientPayloadBuilder();
     builder.addString(temperature.toString());
-    client.publishMessage(topicPublishTemp, MqttQos.atMostOnce, builder.payload);
+    client.publishMessage("", MqttQos.atMostOnce, builder.payload); // Ajouter le topic de l'envoi de la temperature
   }
 }
